@@ -1,0 +1,11 @@
+{
+    "blacklist": [
+        "https://languagewikisindex.fandom.com",
+        "http://es.helpers.wikia.com",
+        "http://de.fandom.wikia.com",
+        "https://services.wikia.com",
+        "http://fandom.wikia.com",
+        "https://gaming.fandom.com",
+        "https://gaming.fandom.com/ko"
+    ]
+}

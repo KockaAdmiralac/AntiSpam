@@ -1,0 +1,26 @@
+{
+    "name": "watchers-spam",
+    "description": "Wikia Watchers spam tools",
+    "version": "0.0.0",
+    "keywords": [
+        "wikia",
+        "fandom",
+        "spam"
+    ],
+    "license": "GPL-3.0-or-later",
+    "author": {
+        "name": "KockaAdmiralac",
+        "url": "https://kocka.dilfa.com/wiki/index.php/User:KockaAdmiralac",
+        "email": "1405223@gmail.com"
+    },
+    "dependencies": {
+        "nodemw": ">=0.12.2",
+        "request": ">=2.88.0",
+        "request-promise-native": ">=1.0.7",
+        "string-similarity": ">=3.0.0"
+    },
+    "devDependencies": {
+        "eslint": ">=5.14.1"
+    },
+    "private": true
+}
