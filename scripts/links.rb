@@ -61,7 +61,7 @@ end
 $arr = []
 $res = []
 puts 'Enter wiki URL (without protocol, for example kocka.fandom.com):'
-$base_url = "http://#{gets.chomp}/api.php"
+$base_url = "https://#{gets.chomp}/api.php"
 puts 'Namespace IDs (separated by commas, no spaces please):'
 namespacearr = gets.chomp.split(',')
 namespacearr.each {|n|

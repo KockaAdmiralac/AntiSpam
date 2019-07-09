@@ -34,7 +34,7 @@ namespacearr = gets.chomp.split(',')
 namespacearr.each {|n|
   $ind = 0
   $letter = ''
-  $base_url = "http://#{wiki}/api.php?action=query&list=allpages&aplimit=500&apnamespace=#{n}&apfilterredir=all&format=json"
+  $base_url = "https://#{wiki}/api.php?action=query&list=allpages&aplimit=500&apnamespace=#{n}&apfilterredir=all&format=json"
   puts "Listing namespace #{n}."
   api_call
 }

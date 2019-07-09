@@ -45,7 +45,7 @@ function apiCall() {
 module.exports = function(wiki) {
     return new Promise(function(resolve) {
         callback = resolve;
-        wikiURL = `http://${wiki}/api.php`;
+        wikiURL = `https://${wiki}/api.php`;
         list = Object.keys(require('./links-filtered2.json'));
         apiCall();
     });

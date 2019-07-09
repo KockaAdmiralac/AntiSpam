@@ -57,7 +57,7 @@ module.exports = function(wiki, threads) {
         callback = resolve;
         THREADS = threads;
         running = threads;
-        wikiURL = `http://${wiki}/api.php`;
+        wikiURL = `https://${wiki}/api.php`;
         pages = Object.keys(require('./links-filtered.json'));
         for (let i = 0; i < THREADS; ++i) {
             apiCall();

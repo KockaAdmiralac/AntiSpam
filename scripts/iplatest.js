@@ -60,7 +60,7 @@ function apiCall(url, namespace, from) {
     if (!ns) {
         ns = 0;
     }
-    util.apiQuery(`http://${wiki}`, {
+    util.apiQuery(`https://${wiki}`, {
         gapfilterredir: 'nonredirects',
         gapfrom: from,
         gaplimit: 'max',
@@ -78,7 +78,7 @@ function apiCall(url, namespace, from) {
             if (Number(i) > 0 && page.revisions) {
                 const rev = page.revisions[0];
                 if (net.isIP(rev.user)) {
-                    const str = `http://${wiki}/?diff=${rev.revid} : ${rev.comment}`;
+                    const str = `https://${wiki}/?diff=${rev.revid} : ${rev.comment}`;
                     if (!result[ns]) {
                         result[ns] = [];
                     }
