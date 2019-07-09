@@ -17,7 +17,7 @@ Find these creations in the following order:
 * `/<a href=/i` (NS 1 & NS 501)
 * `/\?>/` (NS 0; content)
 * `/^\|$/` (NS 0; content)
-* `/\b(?:\.|\?|!)(?:<br><br>|<br \/><br \/>)\b/` (NS 0; content; only run on wikis that don't have an English language code; only creations for 2012, 2013, and 2014)
+* `/\b(?:\.|\?|!)(?:<br><br>|<br \/><br \/>)\b/` (NS 0; content; only run on wikis that don't have an English language code; only creations from 2012, 2013, and 2014)
 
 Miscellaneous:
 =======
