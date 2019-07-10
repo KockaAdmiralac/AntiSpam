@@ -62,7 +62,7 @@ function listProfiles() {
             'User-Agent': 'New user profiles spam finder'
         },
         method: 'GET',
-        uri: `https://services.wikia.com/user-attribute/user/bulk?${
+        uri: `https://services.fandom.com/user-attribute/user/bulk?${
             users.splice(0, 20).map(u => `id=${u}`).join('&')
         }`
     }).then(function(d) {

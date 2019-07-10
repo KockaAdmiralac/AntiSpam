@@ -26,7 +26,7 @@ def thread_main
       for i in ind...$ind do
         str << "id=#{i}"
       end
-      res = HTTParty.get("https://services.wikia.com/user-attribute/user/bulk?#{str.join("&")}")
+      res = HTTParty.get("https://services.fandom.com/user-attribute/user/bulk?#{str.join("&")}")
       if res
         prop = JSON.parse(res.body, :symbolize_names => true)
         if prop[:users]
