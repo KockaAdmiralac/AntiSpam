@@ -1,6 +1,12 @@
 * https://alanwake.fandom.com/wiki/Special:Contributions/217.64.170.125
 * https://aquarion.fandom.com/wiki/Special:Contributions/24.11.128.54
 * https://claymore.fandom.com/wiki/Special:Contributions/128.90.86.205
+* https://creatures.fandom.com/wiki/Special:Contributions/110.77.236.140
+* https://creatures.fandom.com/wiki/Special:Contributions/124.106.30.204
+* https://creatures.fandom.com/wiki/Special:Contributions/222.77.211.238
+* https://creatures.fandom.com/wiki/Special:Contributions/58.27.140.58
+* https://creatures.fandom.com/wiki/Special:Contributions/58.65.114.157
+* https://creatures.fandom.com/wiki/Special:Contributions/86.120.197.66
 * https://linuxstudio.fandom.com/wiki/Special:Contributions/189.84.117.2
 * https://theoffice.fandom.com/wiki/Special:Contributions/202.67.40.50
 * https://theoffice.fandom.com/wiki/Special:Contributions/75.64.106.28
