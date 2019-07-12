@@ -8,96 +8,138 @@
 /**
  * Importing modules.
  */
-const fs = require('fs'),
+const fsPromises = require('fs').promises,
       http = require('request-promise-native'),
-      {batch, first, last, threads} = require('./config/wikis.json');
+      progress = require('cli-progress'),
+      {batch, idBatch, threads} = require('./config/wikis.json');
 
 /**
  * Constants.
  */
-const results = fs.createWriteStream('wikis.json'),
-      errors = fs.createWriteStream('results/wikis-errors.txt', {
-          flags: 'a'
-      });
+const bar = new progress.Bar({
+          barsize: 25,
+          clearOnComplete: true,
+          format: '[{bar}] {percentage}% ETA: {eta}s',
+          stopOnComplete: true,
+          stream: process.stdout
+      }, progress.Presets.shades_classic);
 
 /**
  * Global variables.
  */
-let counter = 0,
-    currwiki = first,
-    logInterval = null;
+let results = null;
 
 /**
- * Callback after listing wiki data.
- * @param {Object} items Requested wiki data
+ * Opens the wiki info results file.
  */
-function listWikisCallback({items}) {
-    if (typeof items === 'object') {
-        for (const id in items) {
-            ++counter;
-            const data = items[id];
-            for (const prop in data) {
-                if (!data[prop]) {
-                    delete data[prop];
-                }
-            }
-            results.write(`"${id}":${JSON.stringify(data)},`);
-        }
-    } else {
-        console.error('`items` is not an object!');
-        errors.write('`items` is not an object!\n');
-    }
-    // eslint-disable-next-line no-use-before-define
-    listWikis();
+async function openResults() {
+    console.info('Opening results.');
+    results = await fsPromises.open('wikis.json', 'w+');
+    await results.write('{');
 }
 
 /**
- * Requests wiki data from WikisApiController.
+ * Gets all wiki IDs.
  */
-function listWikis() {
-    const i = currwiki;
-    if (i > last) {
-        return;
+async function getAllIDs() {
+    console.info('Obtaining all wiki IDs.');
+    let offset = 1,
+        ids = [];
+    while (offset) {
+        const {nextOffset, wikiIds} = await http({
+            json: true,
+            method: 'GET',
+            qs: {
+                controller: 'UnifiedSearchIndexing',
+                limit: idBatch,
+                method: 'getWikis',
+                offset
+            },
+            uri: 'https://community.fandom.com/wikia.php'
+        });
+        offset = nextOffset;
+        ids = ids.concat(wikiIds);
     }
-    currwiki += batch;
-    const ids = [...Array(batch).keys()].map(a => a + i).join(',');
-    http({
+    return ids;
+}
+
+/**
+ * Gets information about a batch of wikis.
+ * @param {Array<Number>} ids Wiki IDs to get information about
+ * @returns {Promise} Promise to listen on for response
+ */
+function getWikiInfo(ids) {
+    return http({
         json: true,
         method: 'POST',
         qs: {
             cb: Date.now(),
-            ids
+            ids: ids.join(',')
         },
         uri: 'https://community.fandom.com/api/v1/Wikis/Details'
-    }).then(listWikisCallback).catch(function(error) {
-        if (error.statusCode && error.statusCode >= 500) {
-            console.error('Server error', error.statusCode, error.error);
-        } else {
-            console.error('Request error:', error);
-        }
-        errors.write(`${JSON.stringify(ids)}\n${error.statusCode}: ${JSON.stringify(error.error)}\n`);
-        listWikis();
     });
 }
 
 /**
- * Logs current progress.
+ * Gets information about wikis with specified IDs.
+ * @param {Array<Number>} wikiIds IDs of wikis to get info about
  */
-function log() {
-    console.info(`${currwiki}/${last} (${
-        Math.round(currwiki / last * 10000) / 100
-    }%) [${counter}]`);
-    if (currwiki > last) {
-        console.info('Finished!');
-        results.write('"_end":{}}');
-        clearInterval(logInterval);
+async function getInfo(wikiIds) {
+    const allWikis = wikiIds.length;
+    console.info('Starting fetch of', allWikis, 'wikis.');
+    bar.start(allWikis, 0);
+    const errorIds = [];
+    while (wikiIds.length) {
+        const promises = [],
+              allIds = [];
+        for (let i = 0; i < threads; ++i) {
+            if (wikiIds.length) {
+                const batchIds = wikiIds.splice(0, batch);
+                allIds.push(...batchIds);
+                promises.push(getWikiInfo(batchIds));
+            } else {
+                break;
+            }
+        }
+        try {
+            const wikis = (await Promise.all(promises))
+                .reduce((a, b) => Object.assign(a, b));
+            for (const id in wikis) {
+                await results.write(`"${id}":${JSON.stringify(wikis[id])},`);
+            }
+            bar.update(allWikis - wikiIds.length);
+        } catch (error) {
+            errorIds.push(...allIds);
+        }
+    }
+    return errorIds;
+}
+
+/**
+ * Fetches information about all wikis.
+ * @param {Array<Number>} wikiIds IDs of all Fandom wikis
+ */
+async function getAllInfo(wikiIds) {
+    let checkIds = wikiIds;
+    while (checkIds.length) {
+        checkIds = await getInfo(checkIds);
     }
 }
 
-// Start.
-console.info('Running wiki lister.');
-results.write('{');
-for (let i = 0; i < threads; ++i) {
-    listWikis();
+/**
+ * Closes the results file.
+ */
+async function closeResults() {
+    await results.write('"no": null}');
+    await results.close();
+    console.info('Finished.');
 }
-logInterval = setInterval(log, 5000);
+
+// Start.
+openResults()
+    .then(getAllIDs)
+    .then(getAllInfo)
+    .then(closeResults)
+    .catch(error => console.error(
+        'An error occurred:', error
+    ));

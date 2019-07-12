@@ -14,13 +14,14 @@
         "email": "1405223@gmail.com"
     },
     "dependencies": {
+        "cli-progress": ">=2.1.1",
         "nodemw": ">=0.12.2",
         "request": ">=2.88.0",
         "request-promise-native": ">=1.0.7",
         "string-similarity": ">=3.0.0"
     },
     "devDependencies": {
-        "eslint": ">=5.14.1"
+        "eslint": ">=6.0.1"
     },
     "private": true
 }

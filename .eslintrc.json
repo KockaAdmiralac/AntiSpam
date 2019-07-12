@@ -6,10 +6,13 @@
     "globals": {
         "main": false
     },
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
     "rules": {
         "for-direction": "warn",
         "getter-return": "error",
-        "no-await-in-loop": "warn",
+        "no-await-in-loop": "off",
         "no-compare-neg-zero": "error",
         "no-cond-assign": "error",
         "no-console": "off",
