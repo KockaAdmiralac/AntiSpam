@@ -13,7 +13,7 @@ Find these creations in the following order:
 * `/^[a-zA-Z0-9]{6} http:\/\/(?:www\.)?[a-zA-Z0-9]{10,40}\.(?:com|net|biz)$/` (NS 1 & NS 501)
 * `/^http:\/\/www\.[a-zA-Z0-9]{10,40}\.com$/` (NS 1 & NS 501)
 * `/^[a-z]{5,20}, http:\/\/www\.[a-z]{10}\.com [a-z]{10}$/` (NS 1 & NS 501)
-* `/^[a-z]{11}, http:\/\//` (NS 1 & NS 501)
+* `/^[a-z]{5,20}, http:\/\/.*, [a-zA-Z]{7}\.$/` (NS 1 & NS 501)
 * `/<a href=/i` (NS 1 & NS 501)
 * `/\?>/` (NS 0; content)
 * `/^\|$/` (NS 0; content)
