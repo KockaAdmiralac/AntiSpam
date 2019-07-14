@@ -27,7 +27,9 @@ const bar = new progress.Bar({
 /**
  * Global variables.
  */
-let results = null;
+let results = null,
+    currentBatch = batch,
+    currentThreads = threads;
 
 /**
  * Opens the wiki info results file.
@@ -86,15 +88,23 @@ function getWikiInfo(ids) {
  */
 async function getInfo(wikiIds) {
     const allWikis = wikiIds.length;
-    console.info('Starting fetch of', allWikis, 'wikis.');
+    console.info(
+        'Starting fetch of',
+        allWikis,
+        'wikis, with',
+        currentThreads,
+        'concurrent HTTP requests and',
+        currentBatch,
+        'wikis in a batch.'
+    );
     bar.start(allWikis, 0);
     const errorIds = [];
     while (wikiIds.length) {
         const promises = [],
               allIds = [];
-        for (let i = 0; i < threads; ++i) {
+        for (let i = 0; i < currentThreads; ++i) {
             if (wikiIds.length) {
-                const batchIds = wikiIds.splice(0, batch);
+                const batchIds = wikiIds.splice(0, currentBatch);
                 allIds.push(...batchIds);
                 promises.push(getWikiInfo(batchIds));
             } else {
@@ -112,6 +122,7 @@ async function getInfo(wikiIds) {
             errorIds.push(...allIds);
         }
     }
+    bar.stop();
     return errorIds;
 }
 
@@ -123,6 +134,23 @@ async function getAllInfo(wikiIds) {
     let checkIds = wikiIds;
     while (checkIds.length) {
         checkIds = await getInfo(checkIds);
+        if (currentBatch === 1 && currentThreads === 1) {
+            break;
+        }
+        currentBatch = Math.round(currentBatch / 2);
+        currentThreads = Math.round(currentThreads / 2);
+    }
+    if (checkIds.length) {
+        const errorFile = await fsPromises.open(
+            'results/wikis-errors.json',
+            'w+'
+        );
+        await errorFile.writeFile(JSON.stringify(checkIds, null, 4));
+        await errorFile.close();
+        console.info(
+            'Errors have occurred while fetching wikis,',
+            'see the error log for wikis that failed to fetch.'
+        );
     }
 }
 
@@ -130,7 +158,7 @@ async function getAllInfo(wikiIds) {
  * Closes the results file.
  */
 async function closeResults() {
-    await results.write('"no": null}');
+    await results.write('"no":null}');
     await results.close();
     console.info('Finished.');
 }
