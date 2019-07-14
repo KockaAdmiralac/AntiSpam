@@ -18,7 +18,7 @@ const wikis = require('./wikis.json'),
 const urls = [];
 
 // End marker used by wikis.js.
-delete wikis._end;
+delete wikis.no;
 for (const id in wikis) {
     let {url} = wikis[id];
     if (url.endsWith('/')) {
