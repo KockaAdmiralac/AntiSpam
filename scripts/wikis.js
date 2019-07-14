@@ -78,6 +78,9 @@ function getWikiInfo(ids) {
             cb: Date.now(),
             ids: ids.join(',')
         },
+        transform: d => typeof d === 'object' ?
+            d.items :
+            [],
         uri: 'https://community.fandom.com/api/v1/Wikis/Details'
     });
 }
