@@ -2,6 +2,7 @@
 * https://claymore.fandom.com/wiki/Special:Contributions/128.90.86.205
 * https://creatures.fandom.com/wiki/Special:Contributions/110.77.236.140
 * https://creatures.fandom.com/wiki/Special:Contributions/124.106.30.204
+* https://creatures.fandom.com/wiki/Special:Contributions/192.74.229.130
 * https://creatures.fandom.com/wiki/Special:Contributions/222.77.211.238
 * https://creatures.fandom.com/wiki/Special:Contributions/58.27.140.58
 * https://creatures.fandom.com/wiki/Special:Contributions/58.65.114.157
