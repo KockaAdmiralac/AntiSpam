@@ -1,4 +1,3 @@
-* https://alanwake.fandom.com/wiki/Special:Contributions/217.64.170.125
 * https://aquarion.fandom.com/wiki/Special:Contributions/24.11.128.54
 * https://claymore.fandom.com/wiki/Special:Contributions/128.90.86.205
 * https://creatures.fandom.com/wiki/Special:Contributions/110.77.236.140
@@ -11,6 +10,3 @@
 * https://theoffice.fandom.com/wiki/Special:Contributions/202.67.40.50
 * https://theoffice.fandom.com/wiki/Special:Contributions/75.64.106.28
 * https://theoffice.fandom.com/wiki/Special:Contributions/95.105.152.63
-* https://tobacco.fandom.com/ru/wiki/%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F:Contributions/142.91.81.181
-* https://tobacco.fandom.com/ru/wiki/%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F:Contributions/201.209.34.233
-* https://tobacco.fandom.com/ru/wiki/%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F:Contributions/23.19.171.57
