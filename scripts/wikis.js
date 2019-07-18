@@ -11,7 +11,7 @@
 const fsPromises = require('fs').promises,
       http = require('request-promise-native'),
       progress = require('cli-progress'),
-      {batch, idBatch, threads} = require('./config/wikis.json');
+      {batch, blacklist, idBatch, threads} = require('./config/wikis.json');
 
 /**
  * Constants.
@@ -45,10 +45,10 @@ async function openResults() {
  */
 async function getAllIDs() {
     console.info('Obtaining all wiki IDs.');
-    let offset = 1,
-        ids = [];
+    let offset = 1;
+    const ids = [];
     while (offset) {
-        const {nextOffset, wikiIds} = await http({
+        const {nextOffset, items} = await http({
             json: true,
             method: 'GET',
             qs: {
@@ -60,7 +60,11 @@ async function getAllIDs() {
             uri: 'https://community.fandom.com/wikia.php'
         });
         offset = nextOffset;
-        ids = ids.concat(wikiIds);
+        ids.push(
+            ...items
+                .map(item => item.id)
+                .filter(id => blacklist.includes(String(id)))
+        );
     }
     return ids;
 }
@@ -78,9 +82,7 @@ function getWikiInfo(ids) {
             cb: Date.now(),
             ids: ids.join(',')
         },
-        transform: d => typeof d === 'object' ?
-            d.items :
-            [],
+        transform: d => typeof d === 'object' && d.items || [],
         uri: 'https://community.fandom.com/api/v1/Wikis/Details'
     });
 }

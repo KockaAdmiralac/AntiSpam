@@ -1,6 +1,6 @@
 node_modules
-results/*.txt
-results/*.json
+scripts/results/*.txt
+scripts/results/*.json
 scripts/ips.json
 scripts/gpips.json
 results.txt
