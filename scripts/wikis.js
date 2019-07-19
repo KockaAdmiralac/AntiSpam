@@ -63,7 +63,7 @@ async function getAllIDs() {
         ids.push(
             ...items
                 .map(item => item.id)
-                .filter(id => blacklist.includes(String(id)))
+                .filter(id => !blacklist.includes(String(id)))
         );
     }
     return ids;
