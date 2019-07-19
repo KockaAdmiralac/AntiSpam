@@ -6,7 +6,7 @@
 
 * `/\bforex\b/i`
 * `/^\//`
-* `^About[a-z]{5}$`
+* `/^About[a-z]{5}$/`
 
 ### Edit summary
 
