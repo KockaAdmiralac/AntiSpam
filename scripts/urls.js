@@ -32,7 +32,5 @@ for (const id in wikis) {
 fs.writeFile('urls.json', JSON.stringify(urls), function(e) {
     if (e) {
         console.error('Failed to write to file', e);
-    } else {
-        console.log('Finished.');
     }
 });

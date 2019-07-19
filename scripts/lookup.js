@@ -9,6 +9,7 @@
  * Importing modules.
  */
 const fs = require('fs'),
+      progress = require('cli-progress'),
       util = require('./util.js'),
       urls = require('./urls.json'),
       ips = require('./ips.json'),
@@ -19,56 +20,32 @@ const fs = require('fs'),
  */
 const errors = fs.createWriteStream('results/lookup-errors.txt', {flags: 'a'}),
       results = fs.createWriteStream('results/lookup.txt', {flags: 'a'}),
-      ALL = urls.length,
       errored = [];
 
 /**
- * Shared variables.
+ * Looks up contributions of a batch of users.
+ * @param {string} url URL of the wiki to execute lookup on
+ * @param {Array<string>} batch Batch of users to lookup
+ * @param {string} start Offset from which to look up the contributions
  */
-let offset = 0,
-    url = urls.shift(),
-    interval = null;
-
-/**
- * Gets the next batch of IPs.
- * @returns {Array<String>} Next batch of IPs
- */
-function nextBatch() {
-    const slice = ips.slice(offset, offset + 50);
-    if (slice.length) {
-        offset += 50;
-        return slice;
-    }
-    url = urls.shift();
-    offset = 50;
-    return ips.slice(0, 50);
-}
-
-/**
- * Runs the next API query.
- */
-function nextCall() {
-    const batch = nextBatch(),
-          currl = url;
-    if (!currl) {
-        // Stopping...
-        return;
-    }
-    util.apiQuery(currl, {
-        list: 'usercontribs',
-        uclimit: 'max',
-        ucuser: batch.join('|')
-    }).then(function(d) {
+async function lookupBatch(url, batch, start) {
+    try {
+        const d = await util.apiQuery(url, {
+            list: 'usercontribs',
+            uclimit: 'max',
+            ucstart: start,
+            ucuser: batch.join('|')
+        });
         if (d.error || !d || !d.query || !d.query.usercontribs) {
-            if (errored.indexOf(currl) === -1) {
+            if (errored.indexOf(url) === -1) {
                 if (typeof d === 'string') {
-                    errors.write(`Nonexistent wiki: ${currl}.\n`);
+                    errors.write(`Nonexistent wiki: ${url}.\n`);
                 } else if (d.error && d.error.code === 'readapidenied') {
-                    errors.write(`Private wiki: ${currl}.\n`);
+                    errors.write(`Private wiki: ${url}.\n`);
                 } else {
-                    errors.write(`API error: ${currl}: ${JSON.stringify(d)}.\n`);
+                    errors.write(`API error: ${url}: ${JSON.stringify(d)}.\n`);
                 }
-                errored.push(currl);
+                errored.push(url);
             }
         } else {
             const addr = [];
@@ -79,52 +56,82 @@ function nextCall() {
             });
             if (addr.length) {
                 results.write(
-                    addr.map(a => `${currl}/wiki/Special:Contribs/${a}\n`)
+                    addr.map(a => `${url}/wiki/Special:Contribs/${a}\n`)
                         .join('')
                 );
             }
             if (d['query-continue']) {
-                results.write(`${currl} has continuation!\n`);
+                return d['query-continue'].usercontribs.ucstart;
             }
         }
-        setTimeout(nextCall, 0);
-    }).catch(function(e) {
-        if (errored.indexOf(currl) === -1) {
-            if (e.statusCode === 403) {
-                errors.write(`Internal wiki: ${currl}.\n`);
-            } else if (e.statusCode === 410) {
-                errors.write(`Closed wiki: ${currl}.\n`);
-            } else if (e.statusCode >= 500) {
-                console.error(e);
-                errors.write(`5XX on ${currl}: ${e.body}\n`);
-            } else {
-                console.error(e);
-                errors.write(`Error code ${e.statusCode}: ${currl}.\n`);
-            }
-            errored.push(currl);
+    } catch (e) {
+        if (errored.indexOf(url) !== -1) {
+            return;
         }
-        setTimeout(nextCall, 0);
-    });
-}
-
-/**
- * Logs current lookup status.
- */
-function log() {
-    if (url) {
-        const curr = ALL - urls.length;
-        console.info(
-            `${curr}/${ALL} (${Math.round(curr / ALL * 10000) / 100}%)`
-        );
-    } else {
-        clearInterval(interval);
-        console.info('Finished!');
+        if (e.error && e.error.code === 'ENOTFOUND') {
+            errors.write(`Nonexistent wiki: ${url}.\n`);
+        } else if (e.statusCode === 403) {
+            errors.write(`Internal wiki: ${url}.\n`);
+        } else if (e.statusCode === 410) {
+            errors.write(`Closed wiki: ${url}.\n`);
+        } else if (e.statusCode >= 500) {
+            console.error(e);
+            errors.write(`5XX on ${url}: ${e.body}\n`);
+        } else {
+            console.error(e);
+            errors.write(`Error code ${e.statusCode}: ${url}.\n`);
+        }
+        errored.push(url);
     }
 }
 
-// Run the thing.
-console.info('Running Lookup.');
-for (let i = 0; i < threads; ++i) {
-    nextCall();
+/**
+ * Executes lookup on a wiki.
+ * @param {string} url URL of the wiki to execute lookup on
+ */
+async function lookupWiki(url) {
+    let offset = 0;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const batch = ips.slice(offset, offset + 50);
+        if (batch.length === 0) {
+            break;
+        }
+        let start = await lookupBatch(url, batch);
+        while (start) {
+            start = await lookupBatch(url, batch, start);
+        }
+        offset += 50;
+    }
 }
-interval = setInterval(log, 5000);
+
+/**
+ * Runs the lookup.
+ */
+async function run() {
+    const all = urls.length,
+          bar = new progress.Bar({
+        barsize: 25,
+        clearOnComplete: true,
+        format: '[{bar}] {percentage}% ({value}: {eta}s)',
+        stopOnComplete: true,
+        stream: process.stdout
+    });
+    bar.start(all, 0);
+    while (urls.length) {
+        const promises = [];
+        for (let j = 0; j < threads; ++j) {
+            const url = urls.shift();
+            if (!url) {
+                break;
+            }
+            promises.push(lookupWiki(url));
+        }
+        await Promise.all(promises);
+        bar.update(all - urls.length);
+    }
+    bar.stop();
+}
+
+// Run the thing.
+run();
