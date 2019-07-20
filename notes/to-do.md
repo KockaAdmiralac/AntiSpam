@@ -16,7 +16,7 @@
 
 * `/\?>/`
 * `/^\|$/`
-* `/\b(?:\.|\?|!)(?:<br><br>|<br \/><br \/>)\b/` (only run on wikis that don't have an English language code; only creations from 2012, 2013, and 2014)
+* `/\b(?:\.|\?|!)(?:<br><br>|<br \/><br \/>)\b/` (only run on wikis that don't have an English language code; only creations from 2013 and 2014)
 
 ## Comments
 
