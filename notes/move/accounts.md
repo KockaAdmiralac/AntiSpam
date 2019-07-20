@@ -2,8 +2,6 @@
 * https://creatures.fandom.com/wiki/Special:Contributions/WOMKristen
 * https://imotwom.fandom.com/wiki/Special:Contributions/Worlddark
 * https://philmont.fandom.com/wiki/Special:Contributions/Imminentsolar
-* https://the-marvelous-mrs-maisel.fandom.com/wiki/Special:Contributions/Karroumi109
-* https://the-marvelous-mrs-maisel.fandom.com/wiki/Special:Contributions/Tradii
 * https://theoffice.fandom.com/wiki/Special:Contributions/Daffjeri
 * https://theoffice.fandom.com/wiki/Special:Contributions/Fenitalona
 * https://theoffice.fandom.com/wiki/Special:Contributions/Kaifahaluka
