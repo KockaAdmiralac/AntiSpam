@@ -23,8 +23,8 @@
 * `/^[a-zA-Z0-9]{6} http:\/\/(?:www\.)?[a-zA-Z0-9]{10,40}\.(?:com|net|biz)$/`
 * `/^http:\/\/www\.[a-zA-Z0-9]{10,40}\.com$/`
 * `/^[a-z]{5,20}, http:\/\/www\.[a-z]{10}\.com [a-z]{10}$/`
-* `/^[a-z]{5,20}, http:\/\/.*, [a-zA-Z]{7}\.$/`
-* `/^(?:Aloha!|Hello!) http:\/\/.* ,.*,$/`
+* `/^[a-z]{5,20}, http:\/\/.+, [a-zA-Z]{7}\.$/`
+* `/^(?:Aloha!|Hello!) http:\/\/.+ ,.+,$/`
 * `/freedrive\.com/i`
 * `/^\+z\$8frZdyL%68pSU\/:>w<:E3\.lG-!XIB$/`
 * `/�/`
