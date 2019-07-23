@@ -1,5 +1,5 @@
 ```
-== Blog spam ==
+== Various IP spam ==
 {{Nukey|
 # https://11eyes.fandom.com/wiki/Special:Contribs/187.174.193.242
 # https://11eyes.fandom.com/wiki/Special:Contribs/193.227.183.243
