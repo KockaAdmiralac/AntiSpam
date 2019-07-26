@@ -1,4 +1,10 @@
 {
     "url": "https://undertale.fandom.com",
-    "namespace": 0
+    "namespaces": [
+        0,
+        1,
+        2,
+        3
+    ],
+    "threads": 32
 }

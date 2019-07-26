@@ -11,72 +11,105 @@
  */
 const fs = require('fs'),
       net = require('net'),
+      progress = require('cli-progress'),
       util = require('./util.js'),
-      {url, namespace} = require('./config/ipcreated.json');
+      {url, namespaces, threads} = require('./config/ipcreated.json');
 
 /**
  * Constants.
  */
-const results = fs.createWriteStream('results/ipcreated.txt');
+const results = fs.createWriteStream('results/ipcreated.txt'),
+      bar = new progress.Bar({
+          barsize: 25,
+          clearOnComplete: true,
+          format: '[{bar}] {percentage}% ({value}: {eta}s)',
+          stopOnComplete: true,
+          stream: process.stdout
+      });
 
 /**
- * Global variables.
+ * Gets the creator of an article.
+ * @param {string} title Article whose creator should be retrieved
  */
-let list = [];
-
-/**
- * Checks whether a page has been created by an anonymous user.
- */
-function apiPage() {
-    const page = list.shift();
-    if (!page) {
-        results.end();
-        return;
-    }
-    util.apiQuery(url, {
+async function getCreator(title) {
+    const result = await util.apiQuery(url, {
         indexpageids: 1,
         prop: 'revisions',
         rvdir: 'newer',
         rvprop: 'user',
-        titles: page
-    }).then(function(d) {
-        if (d.error) {
-            console.error('API error while checking page revisions:', d.error);
-        } else {
-            const pageinfo = d.query.pages[d.query.pageids[0]];
-            if (!pageinfo || !pageinfo.revisions) {
-                console.error('No page revisions:', d);
-            } else {
-                const {user} = pageinfo.revisions[0];
-                if (net.isIP(user)) {
-                    results.write(`${url}/wiki/Special:Contribs/${user}\n`);
-                }
-            }
-        }
-        apiPage();
+        titles: title
     });
+    if (result.error) {
+        throw results.error;
+    }
+    const q = result.query,
+          page = q.pages[q.pageids[0]];
+    if (!page.revisions) {
+        return;
+    }
+    return page.revisions[0].user;
 }
 
 /**
  * Lists all pages from a namespace.
- * @param {String} apfrom API parameter to continue listing pages
+ * @param {Number} namespace Namespace to list all pages from
+ * @param {String} from API parameter to continue listing pages
  */
-function apiList(apfrom) {
-    util.apiQuery(url, {
-        apfrom,
+async function listPages(namespace, from) {
+    const result = await util.apiQuery(url, {
+        apfrom: from,
         aplimit: 'max',
         apnamespace: namespace,
         list: 'allpages'
-    }).then(function(d) {
-        list = list.concat(d.query.allpages.map(p => p.title));
-        if (d['query-continue']) {
-            apiList(d['query-continue'].allpages.apfrom);
-        } else {
-            console.info('Finished listing pages, looking up first revisions.');
-            apiPage();
-        }
     });
+    return {
+        offset: result['query-continue'] ?
+            result['query-continue'].allpages.apfrom :
+            null,
+        pages: result.query.allpages.map(page => page.title)
+    };
 }
 
-console.info('Starting IP creation lookup.');
-apiList();
+/**
+ * Runs the anon creation lookup.
+ */
+async function run() {
+    for (let i = 0, l = namespaces.length; i < l; ++i) {
+        console.info('Listing namespace', namespaces[i], '...');
+        let offset = null;
+        const pages = [];
+        while (true) {
+            const result = await listPages(namespaces[i], offset);
+            ({offset} = result);
+            pages.push(...result.pages);
+            if (!offset) {
+                break;
+            }
+        }
+        const {length} = pages;
+        bar.start(length, 0);
+        while (pages.length) {
+            const promises = [];
+            for (let j = 0; j < threads; ++j) {
+                promises.push(getCreator(pages.shift()));
+                if (!pages.length) {
+                    break;
+                }
+            }
+            try {
+                const users = await Promise.all(promises);
+                users.filter(net.isIP).forEach(user => results.write(
+                    `${url}/wiki/Special:Contribs/${util.encode(user)}\n`
+                ));
+            } catch (error) {
+                console.error('API error:', error);
+            }
+            bar.update(length - pages.length);
+        }
+        bar.stop();
+    }
+    results.end();
+}
+
+// Run.
+run();
