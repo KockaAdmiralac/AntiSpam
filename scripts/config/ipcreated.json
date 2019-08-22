@@ -1,10 +1,8 @@
 {
-    "url": "https://undertale.fandom.com",
+    "url": "https://lostpedia.fandom.com",
     "namespaces": [
-        0,
-        1,
         2,
         3
     ],
-    "threads": 32
+    "threads": 64
 }

@@ -1,5 +1,5 @@
 {
-    "threads": 10,
+    "threads": 64,
     "namespaces": [
         4,
         5,

@@ -10,9 +10,9 @@
  */
 const fs = require('fs'),
       util = require('./util.js'),
-      urls = require('./results/gpurls.json'),
+      urls = require('./gpurls.json'),
       ips = require('./gpips.json'),
-      {threads} = require('./config/gplookup.json');
+      {threads} = require('./config/lookup.json');
 
 /**
  * Constants.

@@ -1,7 +1,7 @@
 /**
- * gpewp.js
+ * titles.js
  *
- * Cross-wiki searches for Extreme Wiki Poster spam, Gamepedia edition.
+ * Cross-wiki searches for titles.
  */
 'use strict';
 
@@ -11,15 +11,15 @@
 const fs = require('fs'),
       net = require('net'),
       util = require('./util.js'),
-      {threads, logTime} = require('./config/ewp.json');
+      {threads, logTime} = require('./config/titles.json');
 
 /**
  * Constants.
  */
 const NAMESPACES = [0, 2],
-      errors = fs.createWriteStream('results/gpewp-errors.txt', {flags: 'a'}),
-      results = fs.createWriteStream('results/gpewp.txt', {flags: 'a'}),
-      REGEX = /^(?:[^ ]+?:)?(?:Mc)?(?:[A-Z]|O')[a-z]+?(?:Mc|-[A-Z][a-z]+?)?(?:[A-Z]|O')[a-z]+?[1-9][0-9]{0,3}$/;
+      errors = fs.createWriteStream('results/titles-errors.txt', {flags: 'a'}),
+      results = fs.createWriteStream('results/titles.txt', {flags: 'a'}),
+      REGEX = /^Swimming Lessons(?: \Qfor\E [A-Z][a-z]+?)?$/;
 
 /**
  * Global variables.
@@ -138,18 +138,18 @@ function checkPage() {
             typeof p.revisions[0].user !== 'string'
         ) {
             if (!NAMESPACES.includes(p.ns)) {
-                errlog(`Page is not in the correct namespace: ${url}/${util.encode(page)}`);
+                errlog(`Page is not in the correct namespace: ${url}/wiki/${util.encode(page)}`);
             } else if (p.missing === '') {
-                errlog(`Page does not exist: ${url}/${util.encode(page)}`);
+                errlog(`Page does not exist: ${url}/wiki/${util.encode(page)}`);
             } else {
                 errlog(`Something is odd in page data: ${JSON.stringify(p)} | ${url}/${page}`);
             }
             return checkPageError();
         }
-        // Whether the user is an IP and the title matches EWP criteria.
+        // Whether the user is an IP and the title matches a certain criteria.
         const {user} = p.revisions[0];
         if (net.isIP(user) && user !== '127.0.0.1') {
-            results.write(`${url}/${util.encode(page)}\n`);
+            results.write(`${url}/wiki/${util.encode(page)}\n`);
         }
         checkPageError();
     }).catch(function(error) {
@@ -253,7 +253,7 @@ function log() {
  */
 function init() {
     try {
-        urls = require('./results/gpurls.json');
+        urls = require('./urls.json');
         all = urls.length;
     } catch (e) {
         console.error('Failed to load urls.json. Have you ran urls.js?');
