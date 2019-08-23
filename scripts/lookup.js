@@ -11,7 +11,7 @@
 const fs = require('fs'),
       progress = require('cli-progress'),
       util = require('./util.js'),
-      urls = require('./urls.json'),
+      allUrls = require('./urls.json'),
       ips = require('./ips.json'),
       {threads} = require('./config/lookup.json');
 
@@ -75,10 +75,10 @@ async function lookupBatch(url, batch, start) {
         } else if (e.statusCode === 410) {
             errors.write(`Closed wiki: ${url}.\n`);
         } else if (e.statusCode >= 500) {
-            console.error(e);
-            errors.write(`5XX on ${url}: ${e.body}\n`);
+            console.error(e.error || e.body);
+            errors.write(`${e.statusCode} on ${url}: ${JSON.stringify(e.error || e.body)}\n`);
         } else {
-            console.error(e);
+            console.error(e.error || e.body);
             errors.write(`Error code ${e.statusCode}: ${url}.\n`);
         }
         errored.push(url);
@@ -109,7 +109,10 @@ async function lookupWiki(url) {
  * Runs the lookup.
  */
 async function run() {
-    const all = urls.length,
+    const urls = process.argv.includes('--errored') ?
+        require('./results/lookup-errors.json') :
+        allUrls,
+          all = urls.length,
           bar = new progress.Bar({
         barsize: 25,
         clearOnComplete: true,
@@ -131,6 +134,9 @@ async function run() {
         bar.update(all - urls.length);
     }
     bar.stop();
+    if (errored.length) {
+        await fs.writeFile('results/lookup-errors.json', JSON.stringify(errored, null, 4));
+    }
 }
 
 // Run the thing.
