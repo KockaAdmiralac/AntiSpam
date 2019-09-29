@@ -1,8 +1,8 @@
 set -e
-rm links-final.json
-rm links.txt
-rm notselfcreated.txt
-rm links-filtered2.json
-rm links-filtered.json
-rm links.json
+rm -f links-final.json
+rm -f links.txt
+rm -f notselfcreated.txt
+rm -f links-filtered2.json
+rm -f links-filtered.json
+rm -f links.json
 

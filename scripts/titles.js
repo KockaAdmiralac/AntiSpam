@@ -19,7 +19,7 @@ const fs = require('fs'),
 const NAMESPACES = [0, 2],
       errors = fs.createWriteStream('results/titles-errors.txt', {flags: 'a'}),
       results = fs.createWriteStream('results/titles.txt', {flags: 'a'}),
-      REGEX = /^Swimming Lessons(?: \Qfor\E [A-Z][a-z]+?)?$/;
+      REGEX = /^(?:[^ ]+?)?[A-Z][a-z]+?O'?[A-Z][a-z]+?[1-9][0-9]{0,3}$/;
 
 /**
  * Global variables.
