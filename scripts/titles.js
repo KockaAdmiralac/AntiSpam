@@ -11,15 +11,15 @@
 const fs = require('fs'),
       net = require('net'),
       util = require('./util.js'),
-      {threads, logTime} = require('./config/titles.json');
+      {threads, logTime} = require('./config/titles.json'),
+      {namespaces, regex} = require('./config/titles-settings.json');
 
 /**
  * Constants.
  */
-const NAMESPACES = [0, 2],
-      errors = fs.createWriteStream('results/titles-errors.txt', {flags: 'a'}),
+const errors = fs.createWriteStream('results/titles-errors.txt', {flags: 'a'}),
       results = fs.createWriteStream('results/titles.txt', {flags: 'a'}),
-      REGEX = /^(?:[^ ]+?)?[A-Z][a-z]+?O'?[A-Z][a-z]+?[1-9][0-9]{0,3}$/;
+      REGEX = new RegExp(regex, 'u');
 
 /**
  * Global variables.
@@ -72,7 +72,7 @@ function nextWiki() {
     pages = [];
     listing = true;
     // eslint-disable-next-line no-use-before-define
-    listPages(NAMESPACES[0]);
+    listPages(namespaces[0]);
 }
 
 /**
@@ -137,7 +137,7 @@ function checkPage() {
             typeof p.revisions[0] !== 'object' ||
             typeof p.revisions[0].user !== 'string'
         ) {
-            if (!NAMESPACES.includes(p.ns)) {
+            if (!namespaces.includes(p.ns)) {
                 errlog(`Page is not in the correct namespace: ${url}/wiki/${util.encode(page)}`);
             } else if (p.missing === '') {
                 errlog(`Page does not exist: ${url}/wiki/${util.encode(page)}`);
@@ -223,11 +223,11 @@ function listPages(apnamespace, apfrom) {
                 setTimeout(checkPage, 0);
             }
         }
-        const index = NAMESPACES.indexOf(apnamespace);
+        const index = namespaces.indexOf(apnamespace);
         if (data['query-continue']) {
             listPages(apnamespace, data['query-continue'].allpages.apfrom);
-        } else if (index !== NAMESPACES.length - 1) {
-            listPages(NAMESPACES[index + 1]);
+        } else if (index !== namespaces.length - 1) {
+            listPages(namespaces[index + 1]);
         } else if (pages.length === 0 && running === 0) {
             setTimeout(nextWiki, 0);
         } else {

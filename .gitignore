@@ -1,8 +1,8 @@
 node_modules
-scripts/results/*.txt
-scripts/results/*.json
-scripts/ips.json
+scripts/config/titles-settings.json
 scripts/gpips.json
-results.txt
+scripts/ips.json
+scripts/results/*.json
+scripts/results/*.txt
 scripts/urls.json
 scripts/wikis.json

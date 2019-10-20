@@ -1,8 +1,7 @@
 {
-    "url": "https://lostpedia.fandom.com",
+    "url": "https://creatures.fandom.com",
     "namespaces": [
-        2,
-        3
+        2
     ],
     "threads": 64
 }

@@ -1,0 +1,4 @@
+{
+    "namespaces": [0, 2],
+    "regex": "^[A-Z]"
+}
