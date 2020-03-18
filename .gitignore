@@ -6,3 +6,4 @@ scripts/results/*.json
 scripts/results/*.txt
 scripts/urls.json
 scripts/wikis.json
+scripts/sitefilter/*.txt
