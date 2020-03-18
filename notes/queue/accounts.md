@@ -1,9 +1,0 @@
-* https://imotwom.fandom.com/wiki/Special:Contributions/Worlddark
-* https://philmont.fandom.com/wiki/Special:Contributions/Imminentsolar
-* https://theoffice.fandom.com/wiki/Special:Contributions/Daffjeri
-* https://theoffice.fandom.com/wiki/Special:Contributions/Fenitalona
-* https://theoffice.fandom.com/wiki/Special:Contributions/Kaifahaluka
-* https://theoffice.fandom.com/wiki/Special:Contributions/Matharakh07
-* https://theoffice.fandom.com/wiki/Special:Contributions/Thinklike
-* https://theoffice.fandom.com/wiki/Special:Contributions/Xgw0056
-* https://warframe.fandom.com/wiki/Special:Contributions/BNBCARE
