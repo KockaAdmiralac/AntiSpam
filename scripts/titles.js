@@ -12,14 +12,17 @@ const fs = require('fs'),
       net = require('net'),
       util = require('./util.js'),
       {threads, logTime} = require('./config/titles.json'),
-      {namespaces, regex} = require('./config/titles-settings.json');
+      {namespaces, titles} = require('./config/titles-settings.json');
 
 /**
  * Constants.
  */
 const errors = fs.createWriteStream('results/titles-errors.txt', {flags: 'a'}),
       results = fs.createWriteStream('results/titles.txt', {flags: 'a'}),
-      REGEX = new RegExp(regex, 'u');
+      settings = titles.map(({namespace, regex}) => ({
+          namespace,
+          regex: new RegExp(regex, 'u')
+      }));
 
 /**
  * Global variables.
@@ -209,9 +212,15 @@ function listPages(apnamespace, apfrom) {
         }
         // Register the newly fetched pages.
         pages = pages.concat(
-            data.query.allpages
-                .map(page => page.title)
-                .filter(page => REGEX.test(page))
+            data.query.allpages.filter(
+                page => settings.some(
+                    ({namespace, regex}) => {return regex.exec(page.title) &&
+                                            (
+                                                !namespace ||
+                                                namespace.includes(page.ns)
+                                            )}
+                )
+            ).map(page => page.title)
         );
         // Calculate the amount of available threads.
         const available = threads - running;
