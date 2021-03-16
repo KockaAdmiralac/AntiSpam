@@ -1,7 +1,7 @@
 {
     "name": "watchers-spam",
     "description": "Wikia Watchers spam tools",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "keywords": [
         "wikia",
         "fandom",
@@ -15,15 +15,15 @@
     },
     "dependencies": {
         "bluebird": ">=3.7.2",
-        "cli-progress": ">=3.6.0",
+        "cli-progress": ">=3.9.0",
         "messenger": ">=0.0.9",
-        "nodemw": ">=0.12.2",
+        "nodemw": ">=0.14.0",
         "request": ">=2.88.2",
-        "request-promise-native": ">=1.0.8",
-        "string-similarity": ">=4.0.1"
+        "request-promise-native": ">=1.0.9",
+        "string-similarity": ">=4.0.4"
     },
     "devDependencies": {
-        "eslint": ">=6.8.0"
+        "eslint": ">=7.22.0"
     },
     "private": true
 }
