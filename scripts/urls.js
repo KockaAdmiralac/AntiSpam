@@ -8,9 +8,9 @@
 /**
  * Importing modules.
  */
-const wikis = require('./wikis.json'),
-      fs = require('fs'),
-      {blacklist} = require('./config/urls.json');
+const wikis = require('./wikis.json');
+const fs = require('fs');
+const {blacklist} = require('./config/urls.json');
 
 /**
  * Constants.
@@ -24,7 +24,12 @@ for (const id in wikis) {
     if (url.endsWith('/')) {
         url = url.slice(0, -1);
     }
-    if (blacklist.indexOf(url) === -1) {
+    if (
+        !blacklist.includes(url) &&
+        !url.startsWith('https://ucp-internal-test') &&
+        !url.startsWith('https://old.') &&
+        !url.includes('.preview.')
+    ) {
         urls.push(url);
     }
 }
